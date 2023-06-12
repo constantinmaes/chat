@@ -12,6 +12,7 @@
 </template>
 
 <script setup lang="ts">
+import { init } from '@/utils/ws';
 import { ref } from 'vue';
 
 const myName = ref('');
@@ -19,6 +20,7 @@ const myName = ref('');
 const login = () => {
     console.log('Je suis la fonction login', myName.value);
     localStorage.setItem('myName', myName.value);
+    init();
 };
 </script>
 

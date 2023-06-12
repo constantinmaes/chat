@@ -8,26 +8,39 @@ export const state = reactive({
     barEvents: [],
 });
 
-const URL = 'http://localhost:3000';
+const URL = 'http://localhost:3333';
 
 export let socket;
 
 export const init = () => {
-    socket = io(URL);
+    const myName = localStorage.getItem('myName');
+    const router = useRouter();
+
+    if (!myName) {
+        console.log("myName n'est pas défini");
+        router.push('/login');
+        return;
+    }
+
+    socket = io(URL, {
+        auth: {
+            name: myName,
+        },
+    });
+
+    socket.on('connect', () => {
+        state.connected = true;
+    });
+
+    socket.on('disconnect', () => {
+        state.connected = false;
+    });
+
+    socket.on('foo', (...args) => {
+        state.fooEvents.push(args);
+    });
+
+    socket.on('bar', (...args) => {
+        state.barEvents.push(args);
+    });
 };
-
-socket.on('connect', () => {
-    state.connected = true;
-});
-
-socket.on('disconnect', () => {
-    state.connected = false;
-});
-
-socket.on('foo', (...args) => {
-    state.fooEvents.push(args);
-});
-
-socket.on('bar', (...args) => {
-    state.barEvents.push(args);
-});
