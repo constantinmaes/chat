@@ -44,3 +44,8 @@ export const init = () => {
         state.barEvents.push(args);
     });
 };
+
+export const joinRoomWith = (n) => {
+    console.log('joinRoomWith', n);
+    socket.emit('ask-to-join-room', n);
+};

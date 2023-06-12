@@ -14,13 +14,18 @@
 <script setup lang="ts">
 import { init } from '@/utils/ws';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const myName = ref('');
+
+const router = useRouter();
 
 const login = () => {
     console.log('Je suis la fonction login', myName.value);
     localStorage.setItem('myName', myName.value);
     init();
+
+    router.push('/chat-with');
 };
 </script>
 
