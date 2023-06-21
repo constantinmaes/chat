@@ -17,13 +17,15 @@ io.on('connection', (socket) => {
         `Connection detected with id ${socket.id} from user ${socket.handshake.auth.name}`
     );
 
-    const participateIn = rooms.find((r) =>
+    const participateIn = rooms.filter((r) =>
         r.includes(socket.handshake.auth.name.toLowerCase())
     );
 
     if (participateIn) {
         participateIn.forEach((r) => socket.join(r));
     }
+
+    socket.emit('participate-in', JSON.stringify(participateIn));
 
     // ecoute l'événement de déconnexion
     socket.on('disconnect', (reason) =>
@@ -46,9 +48,28 @@ io.on('connection', (socket) => {
         const names = [socket.handshake.auth.name, n];
         names.sort();
         const roomName = names.join('-').toLowerCase();
-        rooms.push(roomName);
+        if (!rooms.includes(roomName)) {
+            rooms.push(roomName);
+        }
         console.log(roomName);
         socket.join(roomName);
+        console.log('rooms', rooms);
+        const participateIn = rooms.filter((r) =>
+            r.includes(socket.handshake.auth.name.toLowerCase())
+        );
+
+        console.log(participateIn);
+
+        if (participateIn) {
+            participateIn.forEach((r) => socket.join(r));
+        }
+
+        socket.emit('participate-in', JSON.stringify(participateIn));
+    });
+
+    socket.on('send-to-room', (str) => {
+        const data = JSON.parse(str);
+        io.to(data.room).emit('message-to-room', data.message);
     });
 });
 

@@ -6,6 +6,8 @@ export const state = reactive({
     connected: false,
     fooEvents: [],
     barEvents: [],
+    participateIn: [],
+    currentRoomMessages: [] as string[],
 });
 
 const URL = 'http://localhost:3333';
@@ -43,9 +45,23 @@ export const init = () => {
     socket.on('bar', (...args) => {
         state.barEvents.push(args);
     });
+
+    socket.on('participate-in', (str) => {
+        const rooms = JSON.parse(str);
+        console.log('You participate in rooms', str);
+        state.participateIn = rooms;
+    });
+
+    socket.on('message-to-room', (msg: string) =>
+        state.currentRoomMessages.push(msg)
+    );
 };
 
 export const joinRoomWith = (n) => {
     console.log('joinRoomWith', n);
     socket.emit('ask-to-join-room', n);
+};
+
+export const sendToRoom = (room, message) => {
+    socket.emit('send-to-room', JSON.stringify({ room, message }));
 };
