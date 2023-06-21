@@ -53,7 +53,7 @@ export const init = () => {
     });
 
     socket.on('message-to-room', (msg: string) =>
-        state.currentRoomMessages.push(msg)
+        state.currentRoomMessages.push(JSON.parse(msg))
     );
 };
 

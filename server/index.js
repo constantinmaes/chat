@@ -69,7 +69,12 @@ io.on('connection', (socket) => {
 
     socket.on('send-to-room', (str) => {
         const data = JSON.parse(str);
-        io.to(data.room).emit('message-to-room', data.message);
+        const obj = {
+            content: data.message,
+            from: socket.handshake.auth.name,
+            timestamp: new Date(),
+        };
+        io.to(data.room).emit('message-to-room', JSON.stringify(obj));
     });
 });
 
